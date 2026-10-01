@@ -13,7 +13,7 @@ exports.abrirCrudFuncionario = (req, res) => {
 exports.listarFuncionarios = async (req, res) => {
   try {
     const result = await query(
-      'SELECT func.cpf_pessoa, p.nome_pessoa, func.salario_funcionario, func.cargo_id_cargo, func.porcentagem_comissao_funcionario ' +
+      'SELECT func.cpf_pessoa, p.nome_pessoa, func.salario AS salario_funcionario, func.id_cargo AS cargo_id_cargo, func.comissao AS porcentagem_comissao_funcionario ' +
       'FROM funcionario func, pessoa p WHERE func.cpf_pessoa = p.cpf_pessoa ORDER BY func.cpf_pessoa'
     );
     res.json({ sucesso: true, funcionarios: result.rows });
@@ -35,7 +35,7 @@ exports.criarFuncionario = async (req, res) => {
     }
 
     const result = await query(
-      'INSERT INTO funcionario (cpf_pessoa, salario_funcionario, cargo_id_cargo, porcentagem_comissao_funcionario) VALUES ($1, $2, $3, $4) RETURNING *',
+      'INSERT INTO funcionario (cpf_pessoa, salario, id_cargo, comissao) VALUES ($1, $2, $3, $4) RETURNING cpf_pessoa, salario AS salario_funcionario, id_cargo AS cargo_id_cargo, comissao AS porcentagem_comissao_funcionario',
       [cpf_pessoa, salario_funcionario, cargo_id_cargo, porcentagem_comissao_funcionario]
     );
 
@@ -63,7 +63,7 @@ exports.obterFuncionario = async (req, res) => {
     }
 
     const result = await query(
-      'SELECT * FROM funcionario WHERE cpf_pessoa = $1',
+      'SELECT cpf_pessoa, salario AS salario_funcionario, id_cargo AS cargo_id_cargo, comissao AS porcentagem_comissao_funcionario FROM funcionario WHERE cpf_pessoa = $1',
       [id]
     );
 
@@ -84,7 +84,7 @@ exports.atualizarFuncionario = async (req, res) => {
     const { salario_funcionario, cargo_id_cargo, porcentagem_comissao_funcionario } = req.body;
 
     const existingPersonResult = await query(
-      'SELECT * FROM funcionario WHERE cpf_pessoa = $1',
+      'SELECT cpf_pessoa, salario AS salario_funcionario, id_cargo AS cargo_id_cargo, comissao AS porcentagem_comissao_funcionario FROM funcionario WHERE cpf_pessoa = $1',
       [id]
     );
 
@@ -101,7 +101,7 @@ exports.atualizarFuncionario = async (req, res) => {
     };
 
     const updateResult = await query(
-      'UPDATE funcionario SET salario_funcionario = $1, cargo_id_cargo = $2, porcentagem_comissao_funcionario = $3 WHERE cpf_pessoa = $4 RETURNING *',
+      'UPDATE funcionario SET salario = $1, id_cargo = $2, comissao = $3 WHERE cpf_pessoa = $4 RETURNING cpf_pessoa, salario AS salario_funcionario, id_cargo AS cargo_id_cargo, comissao AS porcentagem_comissao_funcionario',
       [updatedFields.salario_funcionario, updatedFields.cargo_id_cargo, updatedFields.porcentagem_comissao_funcionario, id]
     );
 
@@ -117,7 +117,7 @@ exports.deletarFuncionario = async (req, res) => {
     const id = req.params.id;
 
     const existingPersonResult = await query(
-      'SELECT * FROM funcionario WHERE cpf_pessoa = $1',
+      'SELECT cpf_pessoa, salario AS salario_funcionario, id_cargo AS cargo_id_cargo, comissao AS porcentagem_comissao_funcionario FROM funcionario WHERE cpf_pessoa = $1',
       [id]
     );
 

@@ -7,7 +7,7 @@ exports.abrirCrudCliente = (req, res) => {
 
 exports.listarClientes = async (req, res) => {
   try {
-    const result = await query('SELECT cli.cpf_pessoa, p.nome_pessoa, cli.data_cadastro_cliente FROM cliente cli, pessoa p where cli.cpf_pessoa = p.cpf_pessoa ORDER BY cli.cpf_pessoa ');
+    const result = await query('SELECT cli.cpf_pessoa, p.nome_pessoa, cli.data_cadastro AS data_cadastro_cliente FROM cliente cli, pessoa p where cli.cpf_pessoa = p.cpf_pessoa ORDER BY cli.cpf_pessoa ');
     res.json(result.rows);
   } catch (error) {
     console.error('Erro ao listar clientes:', error);
@@ -19,7 +19,7 @@ exports.criarCliente = async (req, res) => {
   try {
     const { cpf_pessoa, data_cadastro_cliente } = req.body;
     const result = await query(
-      'INSERT INTO cliente (cpf_pessoa, data_cadastro_cliente) VALUES ($1, $2) RETURNING *',
+      'INSERT INTO cliente (cpf_pessoa, data_cadastro) VALUES ($1, $2) RETURNING cpf_pessoa, data_cadastro AS data_cadastro_cliente',
       [cpf_pessoa, data_cadastro_cliente]
     );
     res.status(201).json(result.rows[0]);
@@ -35,7 +35,7 @@ exports.obterCliente = async (req, res) => {
     const id = req.params.id;
     if (!id) return res.status(400).json({ error: 'ID deve ser um número válido' });
 
-    const result = await query('SELECT * FROM cliente WHERE cpf_pessoa = $1', [id]);
+    const result = await query('SELECT cpf_pessoa, data_cadastro AS data_cadastro_cliente FROM cliente WHERE cpf_pessoa = $1', [id]);
 
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Cliente não encontrado' });
@@ -58,7 +58,7 @@ exports.atualizarCliente = async (req, res) => {
     const updatedFields = { data_cadastro_cliente };
 
     const updateResult = await query(
-      'UPDATE cliente SET data_cadastro_cliente = $1 WHERE cpf_pessoa = $2 RETURNING *',
+      'UPDATE cliente SET data_cadastro = $1 WHERE cpf_pessoa = $2 RETURNING cpf_pessoa, data_cadastro AS data_cadastro_cliente',
       [updatedFields.data_cadastro_cliente, id]
     );
 
