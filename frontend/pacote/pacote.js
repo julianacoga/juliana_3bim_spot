@@ -24,7 +24,7 @@ async function carregarCategoria() {
             select.innerHTML = '<option value="">-- Selecione uma categoria --</option>';
 
             data.categorias.forEach(c => {
-                select.innerHTML += `<option value="${c.id_categoria}">${c.id_categoria} - ${c.nome}</option>`;
+                select.innerHTML += `<option value="${c.id_categoria}">${c.id_categoria} - ${c.nome_categoria}</option>`;
             });
 
             select.disabled = true;
@@ -114,6 +114,7 @@ async function procure() {
     if (pacote) {
         mostrarDadospacote(pacote);
         carregarImagem(pacote.foto);
+
 
         visibilidadeDosBotoes('inline', 'none', 'inline', 'inline', 'none');
 

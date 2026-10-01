@@ -52,7 +52,7 @@ CREATE TABLE public.funcionario (
 
 CREATE TABLE public.categoria (
     id_categoria integer NOT NULL,
-    nome varchar(50),
+    nome_categoria varchar(50),
     descricao text
 );
 
@@ -63,7 +63,7 @@ CREATE TABLE public.categoria (
 CREATE TABLE public.pacote (
     id_pacote integer NOT NULL,
     destino varchar(100),
-    foto varchar(255),
+    foto integer,
     descricao text,
     id_categoria integer,
     preco numeric(10,2),
@@ -244,7 +244,7 @@ VALUES
 -- =========================================================
 
 INSERT INTO public.categoria
-    (id_categoria, nome, descricao)
+    (id_categoria, nome_categoria, descricao)
 VALUES
     (1, 'Praia',
      'Dias de descanso, mergulhos, pôr do sol e momentos inesquecíveis à beira-mar.'),
@@ -285,7 +285,7 @@ INSERT INTO public.pacote
 VALUES
     (
         'Tóquio',
-        '1.png',
+        1,
         'Experiência pela capital japonesa, com templos, bairros tradicionais, tecnologia, gastronomia e atrações modernas.',
         10,
         8999.90,
@@ -293,7 +293,7 @@ VALUES
     ),
     (
         'Nova York',
-        '2.png',
+        2,
         'Experiência urbana pela cidade de Nova York, com atrações turísticas, cultura, gastronomia e compras.',
         10,
         7499.90,
@@ -301,7 +301,7 @@ VALUES
     ),
     (
         'Paris',
-        '3.png',
+        3,
         'Viagem pela capital francesa, com museus, monumentos históricos, gastronomia e atrações culturais.',
         9,
         6799.90,
@@ -309,7 +309,7 @@ VALUES
     ),
     (
         'Roma',
-        '4.png',
+        4,
         'Viagem cultural pela capital italiana, com monumentos históricos, museus, arquitetura e gastronomia.',
         9,
         5999.90,
@@ -317,7 +317,7 @@ VALUES
     ),
     (
         'Bariloche',
-        '5.png',
+        5,
         'Destino na Patagônia argentina com paisagens de montanha, lagos, neve e atividades de inverno.',
         3,
         4299.90,
@@ -325,7 +325,7 @@ VALUES
     ),
     (
         'Santiago',
-        '6.png',
+        6,
         'Viagem pela capital chilena, com atrações urbanas, gastronomia e paisagens da Cordilheira dos Andes.',
         2,
         3899.90,
@@ -333,7 +333,7 @@ VALUES
     ),
     (
         'Cartagena',
-        '7.png',
+        7,
         'Destino colombiano com praias, centro histórico, arquitetura colonial e cultura caribenha.',
         1,
         3499.90,
@@ -341,7 +341,7 @@ VALUES
     ),
     (
         'Seul',
-        '8.png',
+        8,
         'Experiência pela capital sul-coreana, combinando tradição, tecnologia, gastronomia e cultura contemporânea.',
         5,
         8299.90,
@@ -349,7 +349,7 @@ VALUES
     ),
     (
         'Lençóis Maranhenses',
-        '9.png',
+        9,
         'Destino de natureza com grandes dunas, lagoas de água cristalina e paisagens únicas.',
         7,
         2199.90,
@@ -357,7 +357,7 @@ VALUES
     ),
     (
         'Gramado',
-        '10.png',
+        10,
         'Destino de serra com arquitetura característica, gastronomia, atrações turísticas e clima ameno.',
         2,
         2499.90,
@@ -365,7 +365,7 @@ VALUES
     ),
     (
         'Rio de Janeiro',
-        '11.png',
+        11,
         'Destino brasileiro com praias, paisagens naturais, pontos turísticos e diversas opções de lazer.',
         1,
         2799.90,
@@ -373,9 +373,31 @@ VALUES
     ),
     (
         'Singapura',
-        '12.png',
+        12,
         'Experiência internacional em uma cidade moderna, com arquitetura, tecnologia, gastronomia e atrações culturais.',
         10,
         9199.90,
         6
     );
+
+-- =========================================================
+-- AJUSTE DAS SEQUÊNCIAS
+-- =========================================================
+
+SELECT pg_catalog.setval(
+    'public.cargo_id_cargo_seq',
+    10,
+    true
+);
+
+SELECT pg_catalog.setval(
+    'public.categoria_id_categoria_seq',
+    10,
+    true
+);
+
+SELECT pg_catalog.setval(
+    'public.pacote_id_pacote_seq',
+    12,
+    true
+);

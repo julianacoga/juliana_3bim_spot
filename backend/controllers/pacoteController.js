@@ -4,7 +4,7 @@ const path = require('path');
 const sharp = require('sharp');
 
 // Listar todos os pacotes
-exports.listarPacotes = async (req, res) => {
+exports.listarPacote = async (req, res) => {
     try {
         const result = await query('SELECT * FROM public.pacote ORDER BY id_pacote');
         res.json({ sucesso: true, pacotes: result.rows });
@@ -37,21 +37,22 @@ exports.obterPacote = async (req, res) => {
 // Criar pacote
 exports.criarPacote = async (req, res) => {
     try {
-        const { destino, foto, descricao, id_categoria } = req.body;
+        const { id_pacote, destino, foto, descricao, id_categoria, preco, estoque } = req.body;
 
         if (!destino) {
             return res.status(400).json({ sucesso: false, mensagem: 'O nome do pacote é obrigatório.' });
         }
 
         const sql = `
-            INSERT INTO public.pacote (destino, foto, descricao, id_categoria, preco, estoque)
-            VALUES ($1, $2, $3, $4, $5, $6)
+            INSERT INTO public.pacote (id_pacote, destino, foto, descricao, id_categoria, preco, estoque)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
             RETURNING *
         `;
 
         const values = [
+            id_pacote,
             destino,
-            foto || null,
+            foto,
             descricao,
             id_categoria,
             preco,
@@ -78,7 +79,7 @@ exports.atualizarPacote = async (req, res) => {
         const sql = `
             UPDATE public.pacote 
             SET destino = $1, 
-                foto = $2, 
+                foto = COALESCE($2, foto),
                 descricao = $3, 
                 id_categoria = $4,
                 preco = $5,
@@ -89,7 +90,7 @@ exports.atualizarPacote = async (req, res) => {
 
         const values = [
             destino,
-            foto || null,
+            foto,
             descricao,
             id_categoria,
             preco,
@@ -133,6 +134,9 @@ exports.uploadImagem = async (req, res) => {
             .resize(300, 300, { fit: 'cover' })
             .toFormat('png')
             .toFile(caminhoDestino);
+
+// grava no banco o nome base do arquivo (o mesmo formato que o carregarImagem espera)
+await query('UPDATE public.pacote SET foto = $1 WHERE id_pacote = $2', [String(id), id]);
 
         res.json({ sucesso: true, mensagem: 'Imagem salva com sucesso!' });
     } catch (error) {

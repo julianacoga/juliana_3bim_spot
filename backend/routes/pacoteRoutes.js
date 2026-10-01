@@ -7,7 +7,7 @@ const pacoteController = require('../controllers/pacoteController');
 const upload = multer({ storage: multer.memoryStorage() });
 
 // Rotas do CRUD de Pacotes
-router.get('/listar', pacoteController.listarPacotes);
+router.get('/listar', pacoteController.listarPacote);
 router.get('/:id', pacoteController.obterPacote);
 router.post('/', pacoteController.criarPacote);
 router.put('/:id', pacoteController.atualizarPacote);
