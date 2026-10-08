@@ -14,10 +14,25 @@ const btnSalvar = document.getElementById('btnSalvar');
 const pessoasTableBody = document.getElementById('pessoasTableBody');
 const messageContainer = document.getElementById('messageContainer');
 
+// Data de hoje no fuso local (formato AAAA-MM-DD)
+function hojeLocal() {
+    const d = new Date();
+    const ano = d.getFullYear();
+    const mes = String(d.getMonth() + 1).padStart(2, '0');
+    const dia = String(d.getDate()).padStart(2, '0');
+    return `${ano}-${mes}-${dia}`;
+}
+
 // Carregar lista de pessoas e popular menu de cargos ao inicializar
 document.addEventListener('DOMContentLoaded', () => {
     carregarPessoas();
     popularCargosSelect();
+
+    // Impede datas futuras no calendário
+    const nasc = document.getElementById('data_nascimento');
+    nasc.max = hojeLocal();
+    nasc.min = '1900-01-01';
+    document.getElementById('data_cadastro_cliente').max = hojeLocal();
 });
 
 // Event Listeners
@@ -72,7 +87,7 @@ function mostrarBotoes(btBuscar, btIncluir, btAlterar, btExcluir, btSalvar, btCa
 function formatarData(dataString) {
     if (!dataString) return '';
     const data = new Date(dataString);
-    return data.toLocaleDateString('pt-BR');
+    return data.toLocaleDateString('pt-BR', { timeZone: 'UTC' });
 }
 
 function converterDataParaISO(dataString) {
@@ -234,6 +249,25 @@ async function salvarOperacao() {
         email_pessoa: formData.get('email_pessoa'),
         telefone_pessoa: formData.get('telefone_pessoa')
     };
+
+    // Validação de datas (não se aplica à exclusão)
+    if (operacao !== 'excluir') {
+        const nascimento = formData.get('data_nascimento');
+        if (nascimento && nascimento > hojeLocal()) {
+            mostrarMensagem('A data de nascimento não pode ser no futuro.', 'error');
+            return;
+        }
+        if (nascimento && nascimento < '1900-01-01') {
+            mostrarMensagem('Data de nascimento inválida.', 'error');
+            return;
+        }
+
+        const dataCadastro = document.getElementById('data_cadastro_cliente').value;
+        if (document.getElementById('checkboxCliente').checked && dataCadastro > hojeLocal()) {
+            mostrarMensagem('A data de cadastro do cliente não pode ser no futuro.', 'error');
+            return;
+        }
+    }
 
     let funcionario = null;
     if (document.getElementById('checkboxFuncionario').checked) {
